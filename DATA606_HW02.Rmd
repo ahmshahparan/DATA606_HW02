@@ -1,0 +1,270 @@
+---
+title: "Data 606 HW 02"
+author: "A H M Shahparan"
+date: "2/18/2018"
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: ./lab.css
+---
+
+####Graded excercises: 2.6, 2.8, 2.20, 2.30, 2.38, 2.44
+
+###2.6) 
+  a) If you roll a pair of fair dice, what is the probability of getting a sum of    1?
+  
+  None because minimun of a pair of fair dice is 2.</br>
+  
+  b) getting a sum of 5?
+  
+  There are 4 combinations which can result in a sum of 5, and 36 total              combinations possible (6 X 6), therefore the probability is 4/36 = 1/9.            Combinations are: (1,4), (2,3), (4,1), (3,2).</br>
+  
+  c) getting a sum of 12?
+  
+  There is only one combination from 2 dice which sum to 12, therefore the           probablity is: 1/36. Combination is: (6,6)
+  
+  
+###2.8)
+  a) Are living below the poverty line and speaking a foreign language at home       disjoint?
+  
+  No. 4.2% of the Americans are living below the poverty line and speak a language   other than English at home.
+
+  b) Draw a Venn diagram summarizing the variables and their associated              probabilities.
+  
+```{r}
+library(VennDiagram)
+poverty <- 14.6
+nonEnglish <- 20.7
+both <- 4.2
+povertyOnly <- poverty - both
+nonEnglishOnly <- nonEnglish - both
+
+venn.plot <- draw.pairwise.venn(poverty, 
+                   nonEnglish,
+                   cross.area=both, 
+                   c("Poverty", "Foreign Language"), 
+                   fill=c("red", "green"),
+                   cat.dist=-0.08,
+                   ind=FALSE)
+grid.draw(venn.plot)
+```
+
+  c) What percent of Americans live below the poverty line and only speak English    at home?
+  
+  Based on the results of the Venn diagram, percent of Americans live below the      poverty line and only speak English at home is:
+```{r}
+povertyOnly
+```
+  
+  d) What percent of Americans live below the poverty line or speak a foreign        language at home?
+  
+  Based on the results of the Venn diagram, percent of Americans live below the      poverty line and speak a foreign language at home is:
+```{r}
+both
+```
+
+  e) What percent of Americans live above the poverty line and only speak English    at home?
+  
+```{r}
+onOrAbovePoverty = 100 - poverty
+onOrAbovePovertOnlyEnglish = onOrAbovePoverty - nonEnglish
+onOrAbovePovertOnlyEnglish
+```
+
+  f) Is the event that someone lives below the poverty line independent of the event that the person speaks a foreign language at home?
+  
+  No. Because, a respondent speaks a foreign language at home would give us          information regarding the probability that this respondent is living below the     poverty line.
+  
+###2.20)
+
+  a) What is the probability that a randomly chosen male respondent or his partner   has blue eyes?
+  
+```{r}
+#A = male with blue eyes, B = female partner with blue eyes, A&B = both male female with blue eyes
+#P(A)+P(B)-P(A&B) = 
+114/204 + 108/204 - 78/204
+```
+  A ~70% probability that a randomly chosen male or his partner has blue eyes.
+  
+  b) What is the probability that a randomly chosen male respondent with blue eyes   has a partner with blue eyes?
+  
+```{r}
+#A|B = Partner Blue given Male Blue
+#P(A|B)
+78/114
+```
+  A ~68% probability that a randomly chosen male with blue eyes has a partenr with   blue eyes
+
+  c) What is the probability that a randomly chosen male respondent with brown eyes   has a partner with blue eyes? What about the probability of a randomly chosen      male respondent with green eyes having a partner with blue eyes?
+  
+```{r}
+#A|B = Partner Blue given Male Brown
+#P(A|B)
+19/54
+```
+  
+  A ~35% probability that a random chosen male with brown eyes has a partner with blue eyes
+  
+```{r}
+#A|B = Partner Blue given Male Green
+#P(A|B)
+11/36
+```
+  A ~30% probability that a random chosen male with green eyes has a partner with blue eyes
+  
+  d) Does it appear that the eye colors of male respondents and their partners are independent? Explain your reasoning.
+  
+  From the given data, it's obvious that individuals with certain eye color have an likeness to selecting a partner with same eye color.It does not appear that pairing based on eye color is independent, the probabilities of a blue eyed male individual selecting a blue eyed female partner is relatively higher than any other color pairing.
+
+###2.30)
+
+  a) Find the probability of drawing a hardcover book first then a paperback         fiction book second when drawing without replacement.
+```{r}
+hardcover = 28/95
+paperFiction = 59/94
+probability = hardcover*paperFiction
+probability
+```
+  ~18.50%
+  
+  b) Determine the probability of drawing a fiction book first and then a hardcover book second, when drawing without replacement.
+```{r}
+fiction = 72/95
+hardcover = 28/94
+probability = fiction*hardcover
+probability
+```
+  ~22.50%
+  
+  c) Calculate the probability of the scenario in part (b), except this time complete the calculations under the scenario where the first book is placed back on the bookcase before randomly drawing the second book.
+  
+```{r}
+fiction = 72/95
+hardcover = 28/95
+probabilityPlacedBack = fiction*hardcover
+probabilityPlacedBack
+```
+  ~22.30%
+  
+  d) The final answers to parts (b) and (c) are very similar. Explain why this is the case.
+  
+  The replacement in case which simply changes the denominator of the second book    selection by 1. Thus, given the number of books on the bookcase (94 vs 95),        replacement has very tiny effect.
+
+###2.38) 
+
+  a) Build a probability model, compute the average revenue per passenger, and compute the corresponding standard deviation.
+  
+```{r}
+probability <- c(0.54, 0.34, 1 - 0.54 - 0.34)
+luggagePiece <- c(0, 1, 2)
+fees <- c(0, 25, 25 + 35)
+dataTable <- data.frame(probability, luggagePiece, fees)
+dataTable$weightedRevenue <- dataTable$probability * dataTable$fees
+dataTable
+```
+
+```{r}
+# Average revenue per passenger
+avgRevPerPax <- sum(dataTable$weightedRevenue)
+avgRevPerPax
+```
+
+```{r}
+# Variance
+dataTable$DiffMean <- dataTable$weightedRevenue - avgRevPerPax
+dataTable$DiffMeanSqrd <- dataTable$DiffMean ^ 2
+dataTable$DiffMeanSqrdTimesProb <- dataTable$DiffMeanSqrd * dataTable$probability
+dataTable
+```
+
+```{r}
+# Standard deviation
+varRevPerPax <- sum(dataTable$DiffMeanSqrdTimesProb)
+sdRevPerPax <- sqrt(varRevPerPax)
+sdRevPerPax
+```
+
+  b) About how much revenue should the airline expect for a flight of 120            passengers? With what standard deviation? Note any assumptions you make and if     you think they are justified.
+  
+```{r}
+# Total Revenue
+noOfPax <- 120
+avgFlightRev <- avgRevPerPax * noOfPax
+avgFlightRev
+
+# Standard Deviation
+varFlightRev <- (noOfPax ^ 2) * varRevPerPax
+sdFlightRev <- sqrt(varFlightRev)
+sdFlightRev
+```
+  This standard deviation is only valid if the average revenue per passenger is independent of other random variables. It may not be a good idea to use standard deviation to estimate the revenue.
+  
+###2.44)
+
+```{r}
+income = c("$1 - $9,999 or less", 
+            "$10,000 to $14,999", 
+            "$15,000 to $24,999",
+            "$25,000 to $34,999",
+            "$35,000 to $49,999",
+            "$50,000 to $64,000",
+            "$65,000 to $74,999",
+            "$75,000 to $99,999",
+            "$100,000 or more")
+Income = c(1, 10000,15000,25000,35000,45000,55000,65000,75000,100000)
+Proportion = c(2.2,4.7,15.8,18.3,21.2,13.9,5.8,8.4,9.7)
+barplot(Proportion,Income,xlab='Income distribution')
+```
+
+  a) Describe the distribution of total personal income.
+  
+  A bimodal distribution with right skew. This is a smooth distribution rising till   the middle value ($35,000 to $49,999) and then dropping quickly for few sections   and then rising slowly for the next sections.
+  
+  b) What is the probability that a randomly chosen US resident makes less than      $50,000 per year?
+  
+```{r}
+#P(make lesser than $50k) =
+2.2 + 4.7 + 15.8 + 18.3 + 21.2
+``` 
+  The probability is 62.2%.
+  
+  c) What is the probability that a randomly chosen US resident makes less than      $50,000 per year and is female? Note any assumptions you make.
+  
+  Assuming they are independent events then P(A and B) = P(A) x P(B).
+```{r}
+#P(make lesser than $50k and female) =
+(62.2 * 41)/100
+```
+  The probability is 25.50%.
+  
+  d) The same data source indicates that 71.8% of females make less than $50,000     per year. Use this value to determine whether or not the assumption you made in    part (c) is valid.
+  
+```{r}
+# Samples of making lesser than $50,000:
+(62.2 * 96420486)/100
+```
+
+```{r}
+# Number of females in the samples:
+(41 * 96420486)/100
+```
+
+```{r}
+# Number of female who make lesser than $50,000:
+(71.8 * 39532399)/100
+```
+
+```{r}
+# The probability that a randomly chosen US resident makes less than $50,000 per year and is female:
+(28384262 / 96420486)*100
+```
+
+  As, the probability that a randomly chosen US resident makes less than $50,000 per year and is female is 29.44%, so the assumption I made in part C is invalid.
+  
+  
+
+
+  
+  
+
